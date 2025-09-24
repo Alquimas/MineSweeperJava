@@ -60,7 +60,7 @@ mvn clean package
 Isso gera o arquivo `target/MineSweeper-1.0.jar`, que pode ser executado com:
 
 ```sh
-java -jar target/my-app-1.0-SNAPSHOT.jar
+java -jar target/MineSweeper-1.0.jar
 ```
 
 A suíte de testes por sua vez pode ser executada por completo usando:
