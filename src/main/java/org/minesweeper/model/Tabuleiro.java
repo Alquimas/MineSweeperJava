@@ -63,6 +63,114 @@ public class Tabuleiro implements TabuleiroInterface {
         }
     }
 
+    /**
+     * Função responsável por abrir um quadrado do tabuleiro.
+     *
+     * @param localizacao Contém a localização do quadrado a ser aberto.
+     * @return
+     * <ul>
+     * <li>-1: O quadrado já está aberto.</li>
+     * <li>-2: O quadrado está marcado e não foi aberto.</li>
+     * <li>-3: O quadrado foi aberto e contém uma bomba em seu interior.</li>
+     * <li>Qualquer valor não negativo: O quadrado foi aberto e o valor retornado corresponde
+     * à quantidade de bombas em seus quadrados vizinhos.</li>
+     * </ul>
+     */
+    public int abrirQuadrado(Localizacao localizacao) {
+        int linha = localizacao.getLinha();
+        int coluna = localizacao.getColuna();
+
+        if (tabuleiro.get(linha).get(coluna).isAberto()) return -1;
+        if (tabuleiro.get(linha).get(coluna).isMarcado()) return -2;
+
+        tabuleiro.get(linha).get(coluna).setAberto(true);
+        
+        if (tabuleiro.get(linha).get(coluna).isBomba()) return -3;
+        return quantVizinhosPerigosos(localizacao);
+    }
+
+    /**
+     * Função responsável por contar quantos vizinhos de um quadrado
+     * contém bombas.
+     *
+     * @param localizacao O quadrado que terá seus vizinhos consultados.
+     * @return Um valor entre 0 e 8 que diz a quantidade de vizinhos ao
+     * redor do quadrado inicial que contém bombas.
+     */
+    private int quantVizinhosPerigosos(Localizacao localizacao){
+        int linha = localizacao.getLinha();
+        int coluna = localizacao.getColuna();
+
+        int cont = 0;
+
+        if (quadradoExiste(linha-1, coluna))
+            if (tabuleiro.get(linha-1).get(coluna).isBomba())
+                cont++;
+
+        if (quadradoExiste(linha-1, coluna-1))
+            if (tabuleiro.get(linha-1).get(coluna-1).isBomba())
+                cont++;
+
+        if (quadradoExiste(linha-1, coluna+1))
+            if (tabuleiro.get(linha-1).get(coluna+1).isBomba())
+                cont++;
+
+        if (quadradoExiste(linha+1, coluna))
+            if (tabuleiro.get(linha+1).get(coluna).isBomba())
+                cont++;
+
+        if (quadradoExiste(linha+1, coluna-1))
+            if (tabuleiro.get(linha+1).get(coluna-1).isBomba())
+                cont++;
+
+        if (quadradoExiste(linha+1, coluna+1))
+            if (tabuleiro.get(linha+1).get(coluna+1).isBomba())
+                cont++;
+
+        if (quadradoExiste(linha, coluna-1))
+            if (tabuleiro.get(linha).get(coluna-1).isBomba())
+                cont++;
+
+        if (quadradoExiste(linha, coluna+1))
+            if (tabuleiro.get(linha).get(coluna+1).isBomba())
+                cont++;
+
+        return cont;
+    }
+
+    private boolean quadradoExiste(int linha, int coluna){
+        if (coluna < 0 || coluna > coluna_size) return false;
+        if (linha < 0 || linha > linha_size) return false;
+
+        return true;
+    }
+
+    /**
+     * Função responsável por marcar um quadrado.
+     *
+     * @param localizacao Contém a localização do quadrado a ser marcado.
+     * @return
+     * <ul>
+     *     <li>-1: O quadrado já está aberto e não foi marcado.</li>
+     *     <li>0: O quadrado não estava marcado e foi marcado.</li>
+     *     <li>1: O quadrado estava marcado e foi desmarcado.</li>
+     * </ul>
+     */
+    public int marcaQuadrado(Localizacao localizacao){
+        int linha = localizacao.getLinha();
+        int coluna = localizacao.getColuna();
+
+        if (tabuleiro.get(linha).get(coluna).isAberto()) return -1;
+
+        if (tabuleiro.get(linha).get(coluna).isMarcado()) {
+            tabuleiro.get(linha).get(coluna).setMarcado(false);
+            return 1;
+        } else {
+            tabuleiro.get(linha).get(coluna).setMarcado(true);
+            return 0;
+        }
+    }
+
     public int getLinha_size() {
         return linha_size;
     }
