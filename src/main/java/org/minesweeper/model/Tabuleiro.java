@@ -84,7 +84,7 @@ public class Tabuleiro implements TabuleiroInterface {
         if (tabuleiro.get(linha).get(coluna).isMarcado()) return -2;
 
         tabuleiro.get(linha).get(coluna).setAberto(true);
-        
+
         if (tabuleiro.get(linha).get(coluna).isBomba()) return -3;
         return quantVizinhosPerigosos(localizacao);
     }
@@ -169,6 +169,25 @@ public class Tabuleiro implements TabuleiroInterface {
             tabuleiro.get(linha).get(coluna).setMarcado(true);
             return 0;
         }
+    }
+
+
+    public boolean isBomba(Localizacao localizacao){
+        int linha = localizacao.getLinha();
+        int coluna = localizacao.getColuna();
+        return tabuleiro.get(linha).get(coluna).isBomba();
+    }
+
+    public boolean isAberto(Localizacao localizacao){
+        int linha = localizacao.getLinha();
+        int coluna = localizacao.getColuna();
+        return tabuleiro.get(linha).get(coluna).isAberto();
+    }
+
+    public boolean isMarcado(Localizacao localizacao){
+        int linha = localizacao.getLinha();
+        int coluna = localizacao.getColuna();
+        return tabuleiro.get(linha).get(coluna).isMarcado();
     }
 
     public int getLinha_size() {
