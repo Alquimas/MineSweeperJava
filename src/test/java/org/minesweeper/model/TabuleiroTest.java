@@ -1,7 +1,7 @@
 package org.minesweeper.model;
 
-import com.sun.jdi.InvocationException;
 import org.junit.jupiter.api.*;
+import org.minesweeper.exceptions.ForaDoTabuleiroException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -130,7 +130,7 @@ class TabuleiroTest {
 
         @Test
         @DisplayName("Verifica a aleatoriedade na criação de dois tabuleiros")
-        void testAleatoriedade() {
+        void testAleatoriedade() throws ForaDoTabuleiroException {
             tabuleiro.criaTabuleiro(10, 10, 40);
             Set<Localizacao> bombasPrimeiroTabuleiro = new HashSet<>();
             for (int i = 0; i < 10; i++) {
@@ -197,7 +197,7 @@ class TabuleiroTest {
 
         @Test
         @DisplayName("Retorna -1 ao tentar abrir um quadrado já aberto e quadrado permanece aberto")
-        void testAbrirQuadradoJaAberto() {
+        void testAbrirQuadradoJaAberto() throws ForaDoTabuleiroException {
             board.get(1).get(1).setAberto(true);
             assertEquals(-1, tabuleiro.abrirQuadrado(new Localizacao(1, 1)));
             assertTrue(tabuleiro.isAberto(new Localizacao(1, 1)), "Quadrado aberto deve permanecer aberto");
@@ -205,7 +205,7 @@ class TabuleiroTest {
 
         @Test
         @DisplayName("Retorna -2 ao tentar abrir um quadrado marcado e não conseguiu abrir quadrado marcado")
-        void testAbrirQuadradoMarcado() {
+        void testAbrirQuadradoMarcado() throws ForaDoTabuleiroException {
             board.get(1).get(2).setMarcado(true);
             assertEquals(-2, tabuleiro.abrirQuadrado(new Localizacao(1, 2)));
             assertFalse(tabuleiro.isAberto(new Localizacao(1, 2)), "Quadrado marcado não deve ser aberto");
@@ -213,25 +213,26 @@ class TabuleiroTest {
 
         @Test
         @DisplayName("Retorna -3 e abre ao clicar em uma bomba e quadrado foi aberto")
-        void testAbrirQuadradoComBomba() {
+        void testAbrirQuadradoComBomba() throws ForaDoTabuleiroException {
             assertEquals(-3, tabuleiro.abrirQuadrado(new Localizacao(0, 0)));
             assertTrue(tabuleiro.isAberto(new Localizacao(0, 0)), "Quadrado com bomba deve ser aberto");
         }
 
         @Test
         @DisplayName("Retorna número de vizinhos perigosos ao abrir quadrado seguro e quadrado foi aberto")
-        void testAbrirQuadradoSeguro() {
+        void testAbrirQuadradoSeguro() throws ForaDoTabuleiroException {
             // Quadrado (0,1) tem 1 vizinho com bomba (0,0)
             assertEquals(1, tabuleiro.abrirQuadrado(new Localizacao(0, 1)));
             assertTrue(tabuleiro.isAberto(new Localizacao(0, 1)), "Quadrado seguro deve ser aberto");
         }
 
         @Test
-        @DisplayName("Lança exceção para localização fora dos limites")
-        void testAbrirQuadradoForaDosLimites() {
-            assertThrows(IndexOutOfBoundsException.class, () -> {
-                tabuleiro.abrirQuadrado(new Localizacao(5, 5));
-            });
+        @DisplayName("Lança exceção correta para localização fora dos limites")
+        void testAbrirQuadradoComLocalizacaoInvalida() {
+            assertThrows(ForaDoTabuleiroException.class, () -> tabuleiro.abrirQuadrado(new Localizacao(10, 0)),
+                    "Linha fora dos limites do tabuleiro deveria gerar exceção ForaDoTabuleiroException em marcaQuadrado");
+            assertThrows(ForaDoTabuleiroException.class, () -> tabuleiro.abrirQuadrado(new Localizacao(0, 10)),
+                    "Coluna fora dos limites do tabuleiro deveria gerar exceção ForaDoTabuleiroException em marcaQuadrado");
         }
     }
 
@@ -513,23 +514,32 @@ class TabuleiroTest {
 
         @Test
         @DisplayName("Retorna -1 ao tentar marcar um quadrado aberto (quadrado fica desmarcado)")
-        void testMarcarQuadradoAberto() {
+        void testMarcarQuadradoAberto() throws ForaDoTabuleiroException {
             assertEquals(-1, tabuleiro.marcaQuadrado(new Localizacao(0, 2)));
             assertFalse(tabuleiro.isMarcado(new Localizacao(0, 2)));
         }
 
         @Test
         @DisplayName("Retorna 1 e desmarca um quadrado já marcado")
-        void testDesmarcarQuadrado() {
+        void testDesmarcarQuadrado() throws ForaDoTabuleiroException {
             assertEquals(1, tabuleiro.marcaQuadrado(new Localizacao(0, 1)));
             assertFalse(tabuleiro.isMarcado(new Localizacao(0, 1)));
         }
 
         @Test
         @DisplayName("Retorna 0 e marca um quadrado não marcado")
-        void testMarcarQuadrado() {
+        void testMarcarQuadrado() throws ForaDoTabuleiroException {
             assertEquals(0, tabuleiro.marcaQuadrado(new Localizacao(0, 0)));
             assertTrue(tabuleiro.isMarcado(new Localizacao(0, 0)));
+        }
+
+        @Test
+        @DisplayName("Lança exceção correta para localização fora dos limites")
+        void testMarcaQuadradoComLocalizacaoInvalida() {
+            assertThrows(ForaDoTabuleiroException.class, () -> tabuleiro.marcaQuadrado(new Localizacao(10, 0)),
+                    "Linha fora dos limites do tabuleiro deveria gerar exceção ForaDoTabuleiroException em marcaQuadrado");
+            assertThrows(ForaDoTabuleiroException.class, () -> tabuleiro.marcaQuadrado(new Localizacao(0, 10)),
+                    "Coluna fora dos limites do tabuleiro deveria gerar exceção ForaDoTabuleiroException em marcaQuadrado");
         }
     }
 
@@ -550,26 +560,38 @@ class TabuleiroTest {
         }
 
         @Test
-        void testIsBomba() {
+        void testIsBomba() throws ForaDoTabuleiroException {
             assertTrue(tabuleiro.isBomba(new Localizacao(0, 0)));
             assertFalse(tabuleiro.isBomba(new Localizacao(0, 1)));
         }
 
         @Test
-        void testIsAberto() {
+        void testIsAberto() throws ForaDoTabuleiroException {
             assertTrue(tabuleiro.isAberto(new Localizacao(0, 0)));
             assertFalse(tabuleiro.isAberto(new Localizacao(0, 1)));
         }
 
         @Test
-        void testIsMarcado() {
+        void testIsMarcado() throws ForaDoTabuleiroException {
             assertTrue(tabuleiro.isMarcado(new Localizacao(0, 0)));
             assertFalse(tabuleiro.isMarcado(new Localizacao(0, 1)));
         }
 
         @Test
+        @DisplayName("Lança exceção correta para localização fora dos limites")
         void testGettersComLocalizacaoInvalida() {
-            assertThrows(IndexOutOfBoundsException.class, () -> tabuleiro.isBomba(new Localizacao(10, 10)));
+            assertThrows(ForaDoTabuleiroException.class, () -> tabuleiro.isBomba(new Localizacao(10, 0)),
+                    "Linha fora dos limites do tabuleiro deveria gerar exceção ForaDoTabuleiroException em isBomba");
+            assertThrows(ForaDoTabuleiroException.class, () -> tabuleiro.isBomba(new Localizacao(0, 10)),
+                    "Coluna fora dos limites do tabuleiro deveria gerar exceção ForaDoTabuleiroException em isBomba");
+            assertThrows(ForaDoTabuleiroException.class, () -> tabuleiro.isMarcado(new Localizacao(10, 0)),
+                    "Linha fora dos limites do tabuleiro deveria gerar exceção ForaDoTabuleiroException em isMarcado");
+            assertThrows(ForaDoTabuleiroException.class, () -> tabuleiro.isMarcado(new Localizacao(0, 10)),
+                    "Coluna fora dos limites do tabuleiro deveria gerar exceção ForaDoTabuleiroException em isMarcado");
+            assertThrows(ForaDoTabuleiroException.class, () -> tabuleiro.isAberto(new Localizacao(10, 0)),
+                    "Linha fora dos limites do tabuleiro deveria gerar exceção ForaDoTabuleiroException em isAberto");
+            assertThrows(ForaDoTabuleiroException.class, () -> tabuleiro.isAberto(new Localizacao(0, 10)),
+                    "Coluna fora dos limites do tabuleiro deveria gerar exceção ForaDoTabuleiroException em isAberto");
         }
     }
 

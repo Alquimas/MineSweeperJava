@@ -1,5 +1,6 @@
 package org.minesweeper.model;
 
+import org.minesweeper.exceptions.ForaDoTabuleiroException;
 import org.minesweeper.service.AcaoTabuleiro;
 
 import java.util.ArrayList;
@@ -78,10 +79,15 @@ public class Tabuleiro implements TabuleiroInterface {
      * <li>Qualquer valor não negativo: O quadrado foi aberto e o valor retornado corresponde
      * à quantidade de bombas em seus quadrados vizinhos.</li>
      * </ul>
+     * @throws ForaDoTabuleiroException Quando a localização estiver fora
+     * dos limites do tabuleiro.
      */
-    public int abrirQuadrado(Localizacao localizacao) {
+    public int abrirQuadrado(Localizacao localizacao) throws ForaDoTabuleiroException {
         int linha = localizacao.getLinha();
         int coluna = localizacao.getColuna();
+
+        if (!quadradoExiste(linha, coluna)) throw new ForaDoTabuleiroException();
+
 
         if (tabuleiro.get(linha).get(coluna).isAberto()) return -1;
         if (tabuleiro.get(linha).get(coluna).isMarcado()) return -2;
@@ -158,10 +164,14 @@ public class Tabuleiro implements TabuleiroInterface {
      *     <li>0: O quadrado não estava marcado e foi marcado.</li>
      *     <li>1: O quadrado estava marcado e foi desmarcado.</li>
      * </ul>
+     * @throws ForaDoTabuleiroException Quando a localização estiver fora
+     * dos limites do tabuleiro.
      */
-    public int marcaQuadrado(Localizacao localizacao){
+    public int marcaQuadrado(Localizacao localizacao) throws ForaDoTabuleiroException{
         int linha = localizacao.getLinha();
         int coluna = localizacao.getColuna();
+
+        if (!quadradoExiste(linha, coluna)) throw new ForaDoTabuleiroException();
 
         if (tabuleiro.get(linha).get(coluna).isAberto()) return -1;
 
@@ -174,22 +184,30 @@ public class Tabuleiro implements TabuleiroInterface {
         }
     }
 
-
-    public boolean isBomba(Localizacao localizacao){
+    public boolean isBomba(Localizacao localizacao) throws ForaDoTabuleiroException{
         int linha = localizacao.getLinha();
         int coluna = localizacao.getColuna();
+
+        if (!quadradoExiste(linha, coluna)) throw new ForaDoTabuleiroException();
+
         return tabuleiro.get(linha).get(coluna).isBomba();
     }
 
-    public boolean isAberto(Localizacao localizacao){
+    public boolean isAberto(Localizacao localizacao) throws ForaDoTabuleiroException{
         int linha = localizacao.getLinha();
         int coluna = localizacao.getColuna();
+
+        if (!quadradoExiste(linha, coluna)) throw new ForaDoTabuleiroException();
+
         return tabuleiro.get(linha).get(coluna).isAberto();
     }
 
-    public boolean isMarcado(Localizacao localizacao){
+    public boolean isMarcado(Localizacao localizacao) throws ForaDoTabuleiroException{
         int linha = localizacao.getLinha();
         int coluna = localizacao.getColuna();
+
+        if (!quadradoExiste(linha, coluna)) throw new ForaDoTabuleiroException();
+
         return tabuleiro.get(linha).get(coluna).isMarcado();
     }
 
