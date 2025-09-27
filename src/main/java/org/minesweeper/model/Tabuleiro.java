@@ -61,6 +61,9 @@ public class Tabuleiro implements TabuleiroInterface {
                 tabuleiro.get(i).add(atual);
             }
         }
+
+        this.linha_size = linha;
+        this.coluna_size = coluna;
     }
 
     /**
