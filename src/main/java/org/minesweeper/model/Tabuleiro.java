@@ -20,7 +20,7 @@ public class Tabuleiro implements TabuleiroInterface {
 
     @Override
     public <R> R accept(AcaoTabuleiro acaoTabuleiro) {
-        return acaoTabuleiro.visitTabuleiro();
+        return acaoTabuleiro.visitTabuleiro(this);
     }
 
     /**
