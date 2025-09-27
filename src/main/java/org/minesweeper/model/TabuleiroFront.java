@@ -1,5 +1,7 @@
 package org.minesweeper.model;
 
+import org.minesweeper.exceptions.ForaDoTabuleiroException;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
@@ -32,32 +34,47 @@ public class TabuleiroFront {
         tabuleiro.get(linha).set(coluna, quadrado);
     }
     
-    public boolean isAberto(Localizacao localizacao) {
+    public boolean isAberto(Localizacao localizacao) throws ForaDoTabuleiroException {
         int linha = localizacao.getLinha();
         int coluna = localizacao.getColuna();
+
+        if (!quadradoExiste(linha, coluna)) throw new ForaDoTabuleiroException();
 
         return tabuleiro.get(linha).get(coluna).isAberto();
     }
 
-    public boolean isMarcado(Localizacao localizacao) {
+    public boolean isMarcado(Localizacao localizacao) throws ForaDoTabuleiroException {
         int linha = localizacao.getLinha();
         int coluna = localizacao.getColuna();
+
+        if (!quadradoExiste(linha, coluna)) throw new ForaDoTabuleiroException();
 
         return tabuleiro.get(linha).get(coluna).isMarcado();
     }
 
-    public boolean isBomba(Localizacao localizacao){
+    public boolean isBomba(Localizacao localizacao) throws ForaDoTabuleiroException {
         int linha = localizacao.getLinha();
         int coluna = localizacao.getColuna();
+
+        if (!quadradoExiste(linha, coluna)) throw new ForaDoTabuleiroException();
 
         return tabuleiro.get(linha).get(coluna).isBomba();
     }
 
-    public int getVizinhosPerigosos(Localizacao localizacao){
+    public int getVizinhosPerigosos(Localizacao localizacao) throws ForaDoTabuleiroException {
         int linha = localizacao.getLinha();
         int coluna = localizacao.getColuna();
 
+        if (!quadradoExiste(linha, coluna)) throw new ForaDoTabuleiroException();
+
         return tabuleiro.get(linha).get(coluna).getNumero();
+    }
+
+    private boolean quadradoExiste(int linha, int coluna){
+        if (coluna < 0 || coluna >= coluna_size) return false;
+        if (linha < 0 || linha >= linha_size) return false;
+
+        return true;
     }
 
     public int getLinha_size() {
