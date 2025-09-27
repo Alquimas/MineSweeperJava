@@ -142,8 +142,8 @@ public class Tabuleiro implements TabuleiroInterface {
     }
 
     private boolean quadradoExiste(int linha, int coluna){
-        if (coluna < 0 || coluna > coluna_size) return false;
-        if (linha < 0 || linha > linha_size) return false;
+        if (coluna < 0 || coluna >= coluna_size) return false;
+        if (linha < 0 || linha >= linha_size) return false;
 
         return true;
     }
