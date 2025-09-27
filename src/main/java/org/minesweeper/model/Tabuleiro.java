@@ -112,37 +112,11 @@ public class Tabuleiro implements TabuleiroInterface {
 
         int cont = 0;
 
-        if (quadradoExiste(linha-1, coluna))
-            if (tabuleiro.get(linha-1).get(coluna).isBomba())
-                cont++;
-
-        if (quadradoExiste(linha-1, coluna-1))
-            if (tabuleiro.get(linha-1).get(coluna-1).isBomba())
-                cont++;
-
-        if (quadradoExiste(linha-1, coluna+1))
-            if (tabuleiro.get(linha-1).get(coluna+1).isBomba())
-                cont++;
-
-        if (quadradoExiste(linha+1, coluna))
-            if (tabuleiro.get(linha+1).get(coluna).isBomba())
-                cont++;
-
-        if (quadradoExiste(linha+1, coluna-1))
-            if (tabuleiro.get(linha+1).get(coluna-1).isBomba())
-                cont++;
-
-        if (quadradoExiste(linha+1, coluna+1))
-            if (tabuleiro.get(linha+1).get(coluna+1).isBomba())
-                cont++;
-
-        if (quadradoExiste(linha, coluna-1))
-            if (tabuleiro.get(linha).get(coluna-1).isBomba())
-                cont++;
-
-        if (quadradoExiste(linha, coluna+1))
-            if (tabuleiro.get(linha).get(coluna+1).isBomba())
-                cont++;
+        for(int i = -1; i <= 1; ++i)
+            for(int j = -1; j <= 1; ++j)
+                if ((i != 0 || j != 0) && quadradoExiste(linha + i, coluna + j)
+                        && tabuleiro.get(linha + i).get(coluna + j).isBomba())
+                    cont++;
 
         return cont;
     }
