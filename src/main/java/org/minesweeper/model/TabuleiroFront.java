@@ -13,9 +13,10 @@ public class TabuleiroFront {
     public TabuleiroFront(int linha_size, int coluna_size){
         this.linha_size = linha_size;
         this.coluna_size = coluna_size;
+        this.tabuleiro = new ArrayList<>();
 
         for (int i = 0; i < linha_size; i++){
-            tabuleiro = new ArrayList<>();
+            tabuleiro.add(new ArrayList<>());
             for (int j = 0; j < coluna_size; j++){
                 Localizacao localizacao = new Localizacao(i, j);
                 tabuleiro.get(i).add(criaQuadrado(localizacao));
