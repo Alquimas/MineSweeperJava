@@ -23,6 +23,7 @@ public class AbrirQuadrado extends AcaoTabuleiro{
                 tabuleiro.setAberto(localizacao);
                 ArrayList<QuadradoFront> quadrados = new ArrayList<>();
                 quadrados.add(new QuadradoFront(true, -1, false, localizacao, true));
+                return quadrados;
             }
 
             tabuleiro.setAberto(localizacao);
