@@ -128,36 +128,6 @@ public class Tabuleiro implements TabuleiroInterface {
         return true;
     }
 
-    /**
-     * Função responsável por marcar um quadrado.
-     *
-     * @param localizacao Contém a localização do quadrado a ser marcado.
-     * @return
-     * <ul>
-     *     <li>-1: O quadrado já está aberto e não foi marcado.</li>
-     *     <li>0: O quadrado não estava marcado e foi marcado.</li>
-     *     <li>1: O quadrado estava marcado e foi desmarcado.</li>
-     * </ul>
-     * @throws ForaDoTabuleiroException Quando a localização estiver fora
-     * dos limites do tabuleiro.
-     */
-    public int marcaQuadrado(Localizacao localizacao) throws ForaDoTabuleiroException{
-        int linha = localizacao.getLinha();
-        int coluna = localizacao.getColuna();
-
-        if (!quadradoExiste(linha, coluna)) throw new ForaDoTabuleiroException();
-
-        if (tabuleiro.get(linha).get(coluna).isAberto()) return -1;
-
-        if (tabuleiro.get(linha).get(coluna).isMarcado()) {
-            tabuleiro.get(linha).get(coluna).setMarcado(false);
-            return 1;
-        } else {
-            tabuleiro.get(linha).get(coluna).setMarcado(true);
-            return 0;
-        }
-    }
-
     public boolean isBomba(Localizacao localizacao) throws ForaDoTabuleiroException{
         int linha = localizacao.getLinha();
         int coluna = localizacao.getColuna();
@@ -174,6 +144,24 @@ public class Tabuleiro implements TabuleiroInterface {
         if (!quadradoExiste(linha, coluna)) throw new ForaDoTabuleiroException();
 
         return tabuleiro.get(linha).get(coluna).isAberto();
+    }
+
+    public void setMarcado(Localizacao localizacao) throws ForaDoTabuleiroException{
+        int linha = localizacao.getLinha();
+        int coluna = localizacao.getColuna();
+
+        if (!quadradoExiste(linha, coluna)) throw new ForaDoTabuleiroException();
+
+        tabuleiro.get(linha).get(coluna).setMarcado(true);
+    }
+
+    public void setDesmarcado(Localizacao localizacao) throws ForaDoTabuleiroException{
+        int linha = localizacao.getLinha();
+        int coluna = localizacao.getColuna();
+
+        if (!quadradoExiste(linha, coluna)) throw new ForaDoTabuleiroException();
+
+        tabuleiro.get(linha).get(coluna).setMarcado(false);
     }
 
     public boolean isMarcado(Localizacao localizacao) throws ForaDoTabuleiroException{
