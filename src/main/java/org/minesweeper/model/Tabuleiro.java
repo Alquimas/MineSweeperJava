@@ -20,7 +20,7 @@ public class Tabuleiro implements TabuleiroInterface {
 
     @Override
     public <R> R accept(AcaoTabuleiro acaoTabuleiro) {
-        return acaoTabuleiro.visitTabuleiro();
+        return acaoTabuleiro.visitTabuleiro(this);
     }
 
     /**
@@ -68,37 +68,6 @@ public class Tabuleiro implements TabuleiroInterface {
     }
 
     /**
-     * Função responsável por abrir um quadrado do tabuleiro.
-     *
-     * @param localizacao Contém a localização do quadrado a ser aberto.
-     * @return
-     * <ul>
-     * <li>-1: O quadrado já está aberto.</li>
-     * <li>-2: O quadrado está marcado e não foi aberto.</li>
-     * <li>-3: O quadrado foi aberto e contém uma bomba em seu interior.</li>
-     * <li>Qualquer valor não negativo: O quadrado foi aberto e o valor retornado corresponde
-     * à quantidade de bombas em seus quadrados vizinhos.</li>
-     * </ul>
-     * @throws ForaDoTabuleiroException Quando a localização estiver fora
-     * dos limites do tabuleiro.
-     */
-    public int abrirQuadrado(Localizacao localizacao) throws ForaDoTabuleiroException {
-        int linha = localizacao.getLinha();
-        int coluna = localizacao.getColuna();
-
-        if (!quadradoExiste(linha, coluna)) throw new ForaDoTabuleiroException();
-
-
-        if (tabuleiro.get(linha).get(coluna).isAberto()) return -1;
-        if (tabuleiro.get(linha).get(coluna).isMarcado()) return -2;
-
-        tabuleiro.get(linha).get(coluna).setAberto(true);
-
-        if (tabuleiro.get(linha).get(coluna).isBomba()) return -3;
-        return quantVizinhosPerigosos(localizacao);
-    }
-
-    /**
      * Função responsável por contar quantos vizinhos de um quadrado
      * contém bombas.
      *
@@ -106,7 +75,7 @@ public class Tabuleiro implements TabuleiroInterface {
      * @return Um valor entre 0 e 8 que diz a quantidade de vizinhos ao
      * redor do quadrado inicial que contém bombas.
      */
-    private int quantVizinhosPerigosos(Localizacao localizacao){
+    public int quantVizinhosPerigosos(Localizacao localizacao){
         int linha = localizacao.getLinha();
         int coluna = localizacao.getColuna();
 
@@ -128,36 +97,6 @@ public class Tabuleiro implements TabuleiroInterface {
         return true;
     }
 
-    /**
-     * Função responsável por marcar um quadrado.
-     *
-     * @param localizacao Contém a localização do quadrado a ser marcado.
-     * @return
-     * <ul>
-     *     <li>-1: O quadrado já está aberto e não foi marcado.</li>
-     *     <li>0: O quadrado não estava marcado e foi marcado.</li>
-     *     <li>1: O quadrado estava marcado e foi desmarcado.</li>
-     * </ul>
-     * @throws ForaDoTabuleiroException Quando a localização estiver fora
-     * dos limites do tabuleiro.
-     */
-    public int marcaQuadrado(Localizacao localizacao) throws ForaDoTabuleiroException{
-        int linha = localizacao.getLinha();
-        int coluna = localizacao.getColuna();
-
-        if (!quadradoExiste(linha, coluna)) throw new ForaDoTabuleiroException();
-
-        if (tabuleiro.get(linha).get(coluna).isAberto()) return -1;
-
-        if (tabuleiro.get(linha).get(coluna).isMarcado()) {
-            tabuleiro.get(linha).get(coluna).setMarcado(false);
-            return 1;
-        } else {
-            tabuleiro.get(linha).get(coluna).setMarcado(true);
-            return 0;
-        }
-    }
-
     public boolean isBomba(Localizacao localizacao) throws ForaDoTabuleiroException{
         int linha = localizacao.getLinha();
         int coluna = localizacao.getColuna();
@@ -167,6 +106,15 @@ public class Tabuleiro implements TabuleiroInterface {
         return tabuleiro.get(linha).get(coluna).isBomba();
     }
 
+    public void setAberto(Localizacao localizacao) throws ForaDoTabuleiroException{
+        int linha = localizacao.getLinha();
+        int coluna = localizacao.getColuna();
+
+        if (!quadradoExiste(linha, coluna)) throw new ForaDoTabuleiroException();
+
+        tabuleiro.get(linha).get(coluna).setAberto(true);
+    }
+
     public boolean isAberto(Localizacao localizacao) throws ForaDoTabuleiroException{
         int linha = localizacao.getLinha();
         int coluna = localizacao.getColuna();
@@ -174,6 +122,24 @@ public class Tabuleiro implements TabuleiroInterface {
         if (!quadradoExiste(linha, coluna)) throw new ForaDoTabuleiroException();
 
         return tabuleiro.get(linha).get(coluna).isAberto();
+    }
+
+    public void setMarcado(Localizacao localizacao) throws ForaDoTabuleiroException{
+        int linha = localizacao.getLinha();
+        int coluna = localizacao.getColuna();
+
+        if (!quadradoExiste(linha, coluna)) throw new ForaDoTabuleiroException();
+
+        tabuleiro.get(linha).get(coluna).setMarcado(true);
+    }
+
+    public void setDesmarcado(Localizacao localizacao) throws ForaDoTabuleiroException{
+        int linha = localizacao.getLinha();
+        int coluna = localizacao.getColuna();
+
+        if (!quadradoExiste(linha, coluna)) throw new ForaDoTabuleiroException();
+
+        tabuleiro.get(linha).get(coluna).setMarcado(false);
     }
 
     public boolean isMarcado(Localizacao localizacao) throws ForaDoTabuleiroException{
