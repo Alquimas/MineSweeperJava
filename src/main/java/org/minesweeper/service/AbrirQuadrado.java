@@ -47,15 +47,16 @@ public class AbrirQuadrado extends AcaoTabuleiro{
         int coluna = localizacao.getColuna();
 
         for(int i = -1; i <= 1; ++i)
-            for(int j = -1; j <= 1; ++j)
-                if ((i != 0 || j != 0)) {
-                    this.localizacao.setLinha(linha + i);
-                    this.localizacao.setColuna(coluna + j);
+            for(int j = -1; j <= 1; ++j){
+                if ((i == 0 && j == 0))  continue;
 
-                    ArrayList<QuadradoFront> q = visitTabuleiro(tabuleiro);
-                    if (q != null)
-                        quadrados.addAll(visitTabuleiro(tabuleiro));
-                }
+                // Cria uma nova operação para abrir o vizinho
+                AbrirQuadrado abreVizinho = new AbrirQuadrado(new Localizacao(linha + i, coluna + j));
+                ArrayList<QuadradoFront> q = abreVizinho.visitTabuleiro(tabuleiro);
+
+                if (q != null)
+                    quadrados.addAll(q);
+            }
 
         return quadrados;
     }
