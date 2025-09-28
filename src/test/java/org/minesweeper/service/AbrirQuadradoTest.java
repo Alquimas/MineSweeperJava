@@ -11,14 +11,11 @@ import org.minesweeper.model.Localizacao;
 import org.minesweeper.model.QuadradoFront;
 import org.minesweeper.model.Tabuleiro;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AbrirQuadradoTest {
@@ -158,65 +155,89 @@ class AbrirQuadradoTest {
             assertEquals(2, qfVizinho.get().getNumero());
         }
 
+        // Substitua o método de teste existente por este em AbrirQuadradoTest.java
+
         @Test
-        @DisplayName("Deve abrir em cascata quando um vizinho também tem 0 vizinhos perigosos")
+        @DisplayName("Deve abrir em cascata e lidar com vizinhos fora do tabuleiro")
         void quandoVizinhoTambemTemZeroVizinhos_AbreRecursivamente() throws ForaDoTabuleiroException {
-            // ARRANGE: Cenário de recursão em 2 níveis
-            // (1,1) -> Inicia. Abre vizinhos.
-            // (0,1) -> Vizinho de (1,1). Também tem 0 bombas, então abre seus próprios vizinhos.
-            // (0,0) -> Vizinho de (0,1). Tem 1 bomba, termina a recursão aqui.
-            // (1,0) -> Vizinho de (0,1). Tem 2 bombas, termina a recursão aqui.
-            // Outros -> Marcados ou abertos para não participarem do resultado.
+            // ARRANGE: Cenário de recursão com configuração para vizinhos fora do tabuleiro.
+
+            record EstadoQuadrado(boolean aberto, boolean marcado, boolean bomba, int numVizinhos) {}
+            Map<Localizacao, EstadoQuadrado> tabuleiroVirtual = new HashMap<>();
 
             // --- Define as localizações para clareza ---
             Localizacao locInicial = new Localizacao(1, 1);
             Localizacao locVizinhoRecursivo = new Localizacao(0, 1);
             Localizacao locTerminal1 = new Localizacao(0, 0);
             Localizacao locTerminal2 = new Localizacao(1, 0);
-            Localizacao locMarcado = new Localizacao(0, 2);
-            Localizacao locJaAberto = new Localizacao(1, 2);
 
-            // --- Configura o comportamento do Mock para cada localização ---
+            // --- Popula o nosso tabuleiro virtual com o estado inicial ---
+            tabuleiroVirtual.put(locInicial, new EstadoQuadrado(false, false, false, 0));
+            tabuleiroVirtual.put(locVizinhoRecursivo, new EstadoQuadrado(false, false, false, 0));
+            tabuleiroVirtual.put(locTerminal1, new EstadoQuadrado(false, false, false, 1));
+            tabuleiroVirtual.put(locTerminal2, new EstadoQuadrado(false, false, false, 2));
 
-            // 1. Quadrado inicial (1,1) -> Inicia a cascata
-            when(mockTabuleiro.isAberto(locInicial)).thenReturn(false);
-            when(mockTabuleiro.isMarcado(locInicial)).thenReturn(false);
-            when(mockTabuleiro.isBomba(locInicial)).thenReturn(false);
-            when(mockTabuleiro.quantVizinhosPerigosos(locInicial)).thenReturn(0);
+            // Configura os demais vizinhos como marcados
+            for (int i = -1; i <= 1; i++) {
+                for (int j = -1; j <= 1; j++) {
+                    if (i == 0 && j == 0) continue;
+                    tabuleiroVirtual.putIfAbsent(new Localizacao(1 + i, 1 + j), new EstadoQuadrado(false, true, false, 0));
+                    tabuleiroVirtual.putIfAbsent(new Localizacao(0 + i, 1 + j), new EstadoQuadrado(false, true, false, 0));
+                }
+            }
 
-            // 2. Vizinho (0,1) -> Continua a cascata
-            when(mockTabuleiro.isAberto(locVizinhoRecursivo)).thenReturn(false);
-            when(mockTabuleiro.isMarcado(locVizinhoRecursivo)).thenReturn(false);
-            when(mockTabuleiro.isBomba(locVizinhoRecursivo)).thenReturn(false);
-            when(mockTabuleiro.quantVizinhosPerigosos(locVizinhoRecursivo)).thenReturn(0);
+            // --- Define as localizações que devem lançar exceção ---
+            Set<Localizacao> locsForaDoTabuleiro = Set.of(
+                    new Localizacao(-1, 0),
+                    new Localizacao(-1, 1),
+                    new Localizacao(-1, 2)
+            );
 
-            // 3. Vizinho terminal (0,0) -> Para a recursão com valor 1
-            when(mockTabuleiro.isAberto(locTerminal1)).thenReturn(false);
-            when(mockTabuleiro.isMarcado(locTerminal1)).thenReturn(false);
-            when(mockTabuleiro.isBomba(locTerminal1)).thenReturn(false);
-            when(mockTabuleiro.quantVizinhosPerigosos(locTerminal1)).thenReturn(1);
+            // --- Configura o Mock para usar o Tabuleiro Virtual com a nova lógica ---
+            when(mockTabuleiro.isAberto(any(Localizacao.class))).thenAnswer(invocation -> {
+                Localizacao loc = invocation.getArgument(0);
 
-            // 4. Vizinho terminal (1,0) -> Para a recursão com valor 2
-            when(mockTabuleiro.isAberto(locTerminal2)).thenReturn(false);
-            when(mockTabuleiro.isMarcado(locTerminal2)).thenReturn(false);
-            when(mockTabuleiro.isBomba(locTerminal2)).thenReturn(false);
-            when(mockTabuleiro.quantVizinhosPerigosos(locTerminal2)).thenReturn(2);
+                // NOVA LÓGICA: Verifica se é uma localização que deve lançar exceção
+                if (locsForaDoTabuleiro.contains(loc)) {
+                    throw new ForaDoTabuleiroException();
+                }
 
-            // 5. Outros vizinhos que não devem ser abertos
-            when(mockTabuleiro.isMarcado(locMarcado)).thenReturn(true);
-            when(mockTabuleiro.isAberto(locJaAberto)).thenReturn(true);
-            // ... (para um teste completo, todos os outros vizinhos seriam configurados)
+                // Lógica antiga para consultar o mapa
+                return tabuleiroVirtual.getOrDefault(loc, new EstadoQuadrado(true, false, false, -1)).aberto();
+            });
+
+            // Configura os outros métodos de leitura (isMarcado, etc.)
+            when(mockTabuleiro.isMarcado(any(Localizacao.class))).thenAnswer(invocation -> {
+                Localizacao loc = invocation.getArgument(0);
+                if (locsForaDoTabuleiro.contains(loc)) { // Consistência
+                    throw new ForaDoTabuleiroException();
+                }
+                return tabuleiroVirtual.getOrDefault(loc, new EstadoQuadrado(false, true, false, -1)).marcado();
+            });
+            when(mockTabuleiro.quantVizinhosPerigosos(any(Localizacao.class))).thenAnswer(invocation -> {
+                Localizacao loc = invocation.getArgument(0);
+                return tabuleiroVirtual.getOrDefault(loc, new EstadoQuadrado(false, false, false, -1)).numVizinhos();
+            });
+
+            // Configura a mudança de estado
+            doAnswer(invocation -> {
+                Localizacao loc = invocation.getArgument(0);
+                if (tabuleiroVirtual.containsKey(loc)) {
+                    EstadoQuadrado estadoAntigo = tabuleiroVirtual.get(loc);
+                    tabuleiroVirtual.put(loc, new EstadoQuadrado(true, estadoAntigo.marcado(), estadoAntigo.bomba(), estadoAntigo.numVizinhos()));
+                }
+                return null;
+            }).when(mockTabuleiro).setAberto(any(Localizacao.class));
 
             // ACT
             AbrirQuadrado acao = new AbrirQuadrado(locInicial);
             ArrayList<QuadradoFront> resultado = acao.visitTabuleiro(mockTabuleiro);
 
             // ASSERT
+            // O resultado esperado não muda, pois a exceção deve ser tratada e não adicionar quadrados à lista.
             assertNotNull(resultado);
-            // Esperamos 4 quadrados: o inicial (1,1), o vizinho recursivo (0,1), e os dois terminais (0,0) e (1,0)
-            assertEquals(4, resultado.size(), "A lista final deve conter 4 quadrados abertos pela cascata.");
+            assertEquals(4, resultado.size());
 
-            // Verifica se cada quadrado esperado está na lista com seu número correto de vizinhos
             assertQuadradoNaLista(resultado, locInicial, 0);
             assertQuadradoNaLista(resultado, locVizinhoRecursivo, 0);
             assertQuadradoNaLista(resultado, locTerminal1, 1);
@@ -229,7 +250,7 @@ class AbrirQuadradoTest {
          */
         private void assertQuadradoNaLista(List<QuadradoFront> lista, Localizacao loc, int numEsperado) {
             Optional<QuadradoFront> quadrado = lista.stream()
-                    .filter(q -> q.getLocalizacao().equals(loc))
+                    .filter(q -> q.getLocalizacao().getLinha() == loc.getLinha() && q.getLocalizacao().getColuna() == loc.getColuna())
                     .findFirst();
 
             assertTrue(quadrado.isPresent(), "O quadrado na localização " + loc.getLinha() + "," + loc.getColuna() + " deveria estar na lista.");
