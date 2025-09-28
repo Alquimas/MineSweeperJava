@@ -25,6 +25,7 @@ public class AbrirQuadrado extends AcaoTabuleiro{
                 quadrados.add(new QuadradoFront(true, -1, false, localizacao, true));
             }
 
+            tabuleiro.setAberto(localizacao);
             int num = tabuleiro.quantVizinhosPerigosos(localizacao);
 
             if (num == 0) return abreVizinhos(tabuleiro);
