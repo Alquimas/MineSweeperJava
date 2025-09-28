@@ -37,7 +37,7 @@ public class AbrirQuadrado extends AcaoTabuleiro{
         }
     }
 
-    public ArrayList<QuadradoFront> abreVizinhos(Tabuleiro tabuleiro){
+    private ArrayList<QuadradoFront> abreVizinhos(Tabuleiro tabuleiro){
         ArrayList<QuadradoFront> quadrados = new ArrayList<>();
         quadrados.add(new QuadradoFront(true, 0, false, localizacao, false));
 
