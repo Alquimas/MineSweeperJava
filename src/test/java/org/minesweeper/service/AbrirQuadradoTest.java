@@ -155,8 +155,6 @@ class AbrirQuadradoTest {
             assertEquals(2, qfVizinho.get().getNumero());
         }
 
-        // Substitua o método de teste existente por este em AbrirQuadradoTest.java
-
         @Test
         @DisplayName("Deve abrir em cascata e lidar com vizinhos fora do tabuleiro")
         void quandoVizinhoTambemTemZeroVizinhos_AbreRecursivamente() throws ForaDoTabuleiroException {
@@ -197,12 +195,11 @@ class AbrirQuadradoTest {
             when(mockTabuleiro.isAberto(any(Localizacao.class))).thenAnswer(invocation -> {
                 Localizacao loc = invocation.getArgument(0);
 
-                // NOVA LÓGICA: Verifica se é uma localização que deve lançar exceção
+                // Verifica se é uma localização que deve lançar exceção
                 if (locsForaDoTabuleiro.contains(loc)) {
                     throw new ForaDoTabuleiroException();
                 }
 
-                // Lógica antiga para consultar o mapa
                 return tabuleiroVirtual.getOrDefault(loc, new EstadoQuadrado(true, false, false, -1)).aberto();
             });
 
