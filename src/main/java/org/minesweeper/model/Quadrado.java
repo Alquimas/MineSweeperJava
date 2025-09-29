@@ -13,6 +13,13 @@ public class Quadrado {
         localizacao = null;
     }
 
+    public Quadrado(Localizacao localizacao) {
+        this.localizacao = localizacao;
+        this.bomba = false;
+        this.marcado = false;
+        this.aberto = false;
+    }
+
     public boolean isBomba() {
         return bomba;
     }
