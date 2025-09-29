@@ -64,50 +64,6 @@ class TabuleiroTest {
     }
 
     @Nested
-    @DisplayName("Testes para criaTabuleiro(int, int, int)")
-    class CriaTabuleiroTests {
-        @Test
-        @DisplayName("Cria tabuleiro com tamanho e quantidade de bombas corretos")
-        void testTamanhoEBombas() throws ForaDoTabuleiroException {
-            tabuleiro.criaTabuleiro(10, 15, 20);
-            assertEquals(10, tabuleiro.getLinha_size());
-            assertEquals(15, tabuleiro.getColuna_size());
-
-            long bombCount = 0;
-            for (int i = 0; i < 10; i++) {
-                for (int j = 0; j < 15; j++) {
-                    if (tabuleiro.isBomba(new Localizacao(i, j))) {
-                        bombCount++;
-                    }
-                }
-            }
-            assertEquals(20, bombCount);
-        }
-
-        @Test
-        @DisplayName("Verifica se a localização dos quadrados corresponde à sua posição na matriz")
-        void testLocalizacaoCorretaDosQuadrados() throws Exception {
-            tabuleiro.criaTabuleiro(8, 8, 10);
-
-            Field tabuleiroField = Tabuleiro.class.getDeclaredField("tabuleiro");
-            tabuleiroField.setAccessible(true);
-            @SuppressWarnings("unchecked")
-            ArrayList<ArrayList<Quadrado>> grid = (ArrayList<ArrayList<Quadrado>>) tabuleiroField.get(tabuleiro);
-
-            for (int i = 0; i < 8; i++) {
-                for (int j = 0; j < 8; j++) {
-                    Localizacao loc = grid.get(i).get(j).getLocalizacao();
-                    assertNotNull(loc);
-                    assertEquals(i, loc.getLinha());
-                    assertEquals(j, loc.getColuna());
-                }
-            }
-        }
-    }
-
-    // Substitua a classe aninhada existente por esta em seu arquivo TabuleiroTest.java
-
-    @Nested
     @DisplayName("Testes para quantVizinhosPerigosos(Localizacao)")
     class QuantVizinhosPerigososTests {
 
@@ -261,15 +217,83 @@ class TabuleiroTest {
     }
 
     @Nested
+    @DisplayName("Testes para inicializaTabuleiroVazio(int, int)")
+    class TestesParaInicializaTabuleiroVazio {
+
+        @Test
+        @DisplayName("Garante que os valores linha_size e coluna_size correspondem à entrada")
+        void testInicializaTabuleiroVazio_DefineTamanhosCorretamente() {
+            // Arrange
+            int linhas = 8;
+            int colunas = 12;
+
+            // Act
+            tabuleiro.inicializaTabuleiroVazio(linhas, colunas);
+
+            // Assert
+            assertEquals(linhas, tabuleiro.getLinha_size(), "O tamanho da linha deve ser 8.");
+            assertEquals(colunas, tabuleiro.getColuna_size(), "O tamanho da coluna deve ser 12.");
+        }
+
+        @Test
+        @DisplayName("Garante que o grid é preenchido com quadrados e localizações corretas")
+        void testInicializaTabuleiroVazio_PreencheGridComQuadradosCorretos() throws Exception {
+            // Arrange
+            int linhas = 10;
+            int colunas = 15;
+
+            // Act
+            tabuleiro.inicializaTabuleiroVazio(linhas, colunas);
+
+            // Assert
+            // Usa reflexão para verificar o estado interno do tabuleiro
+            Field tabuleiroField = Tabuleiro.class.getDeclaredField("tabuleiro");
+            tabuleiroField.setAccessible(true);
+            @SuppressWarnings("unchecked")
+            ArrayList<ArrayList<Quadrado>> grid = (ArrayList<ArrayList<Quadrado>>) tabuleiroField.get(tabuleiro);
+
+            assertNotNull(grid);
+            assertEquals(linhas, grid.size(), "Deve haver 10 listas de linha no tabuleiro.");
+
+            // Itera para verificar cada linha e cada quadrado
+            for (int i = 0; i < linhas; i++) {
+                ArrayList<Quadrado> linhaAtual = grid.get(i);
+                assertNotNull(linhaAtual);
+                assertEquals(colunas, linhaAtual.size(), "A linha " + i + " deve conter 15 quadrados.");
+
+                for (int j = 0; j < colunas; j++) {
+                    Quadrado quadradoAtual = linhaAtual.get(j);
+                    assertNotNull(quadradoAtual, "A posição [" + i + "][" + j + "] não deve ser nula.");
+
+                    // Verifica a localização de cada quadrado
+                    Localizacao loc = quadradoAtual.getLocalizacao();
+                    assertNotNull(loc);
+                    assertEquals(i, loc.getLinha(), "A linha do quadrado em [" + i + "][" + j + "] deve ser " + i);
+                    assertEquals(j, loc.getColuna(), "A coluna do quadrado em [" + i + "][" + j + "] deve ser " + j);
+
+                    // Verifica o estado padrão do quadrado
+                    assertFalse(quadradoAtual.isAberto());
+                    assertFalse(quadradoAtual.isMarcado());
+                    assertFalse(quadradoAtual.isBomba());
+                }
+            }
+        }
+    }
+
+    @Nested
     @DisplayName("Testes para Getters de Estado (isBomba, isAberto, isMarcado)")
     class GettersDeEstadoTests {
         private final Localizacao locValida = new Localizacao(3, 3);
-        private final Localizacao locInvalida = new Localizacao(10, 10);
+        private final int LINHAS = 10;
+        private final int COLUNAS = 10;
 
         @BeforeEach
         void setupBoard() throws ForaDoTabuleiroException {
-            tabuleiro.criaTabuleiro(10, 10, 5);
-            // Configura um estado conhecido
+            // --- LÓGICA DE SETUP ATUALIZADA ---
+            // Agora a inicialização é feita em um único passo
+            tabuleiro.inicializaTabuleiroVazio(LINHAS, COLUNAS);
+
+            // Configura um estado conhecido para o teste
             tabuleiro.setAberto(locValida);
             tabuleiro.setMarcado(locValida);
         }
@@ -329,11 +353,14 @@ class TabuleiroTest {
     @DisplayName("Testes para Setters de Estado (setAberto, setMarcado, setDesmarcado)")
     class SettersDeEstadoTests {
         private final Localizacao locValida = new Localizacao(5, 5);
-        private final Localizacao locInvalida = new Localizacao(10, 10);
+        private final int LINHAS = 10;
+        private final int COLUNAS = 10;
 
         @BeforeEach
         void setupBoard() {
-            tabuleiro.criaTabuleiro(10, 10, 15);
+            // --- LÓGICA DE SETUP ATUALIZADA ---
+            // A inicialização agora é muito mais simples
+            tabuleiro.inicializaTabuleiroVazio(LINHAS, COLUNAS);
         }
 
         @Test
