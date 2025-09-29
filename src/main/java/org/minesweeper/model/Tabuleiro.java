@@ -13,7 +13,6 @@ public class Tabuleiro implements TabuleiroInterface {
     private static Tabuleiro instance;
 
     private Tabuleiro(){
-        this.tabuleiro = new ArrayList<>();
         this.linha_size = 0;
         this.coluna_size = 0;
     }
@@ -23,48 +22,27 @@ public class Tabuleiro implements TabuleiroInterface {
         return acaoTabuleiro.visitTabuleiro(this);
     }
 
-    /**
-     * Cria um novo tabuleiro para o jogo.
-     *
-     * @param linha A quantidade de linhas do tabuleiro.
-     * @param coluna A quantidade de colunas do tabuleiro.
-     * @param bombas A quantidade de bombas do tabuleiro.
-     */
-    public void criaTabuleiro(int linha, int coluna, int bombas){
-        int numQuadrados = linha * coluna;
-        Random r = new Random();
-        ArrayList<Quadrado> quadrados = new ArrayList<>();
-
-        // Cria quadrados sem bomba
-        for (int i = 0; i < numQuadrados - bombas; ++i){
-            quadrados.add(new Quadrado(false, false, false));
-        }
-
-        // Cria quadrados com bomba
-        for (int i = 0; i < bombas; ++i){
-            quadrados.add(new Quadrado(true, false, false));
-        }
-
-        // Conta quantos quadrados foram adicionados
-        int cont = 0;
-
-        // Adiciona os quadrados de forma aletória no tabuleiro
-        for (int i = 0; i < linha; ++i){
-            tabuleiro.add(new ArrayList<>());
-
-            for (int j = 0; j < coluna; ++j){
-                // Reduz o limite de geração para ficar de acordo com o novo
-                // tamanho do array após a remoção do elemento sorteado
-                int num = r.nextInt(numQuadrados - cont++);
-                Quadrado atual = quadrados.remove(num);
-
-                atual.setLocalizacao(new Localizacao(i, j));
-                tabuleiro.get(i).add(atual);
-            }
-        }
-
+    public void inicializaTabuleiroVazio(int linha, int coluna){
         this.linha_size = linha;
         this.coluna_size = coluna;
+
+        this.tabuleiro = new ArrayList<>();
+
+        for (int i = 0; i < linha_size; ++i) {
+            tabuleiro.add(new ArrayList<>());
+            for (int j = 0; j < coluna_size; j++)
+                tabuleiro.get(i).add(new Quadrado(new Localizacao(i, j)));
+        }
+    }
+
+    public void adicionaQuadrado(Quadrado quadrado) throws ForaDoTabuleiroException {
+        int linha = quadrado.getLocalizacao().getLinha();
+        int coluna = quadrado.getLocalizacao().getColuna();
+
+        if (quadradoExiste(linha, coluna))
+            tabuleiro.get(linha).set(coluna, quadrado);
+        else
+            throw new ForaDoTabuleiroException();
     }
 
     /**
