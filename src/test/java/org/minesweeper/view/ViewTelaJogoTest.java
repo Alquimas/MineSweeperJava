@@ -5,10 +5,7 @@ import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.fixture.FrameFixture;
 import org.assertj.swing.fixture.JButtonFixture;
 import org.assertj.swing.fixture.JOptionPaneFixture;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.minesweeper.navigator.NavegadorTelaJogoListener;
 import org.mockito.ArgumentCaptor;
@@ -18,6 +15,7 @@ import org.minesweeper.model.Localizacao;
 
 import javax.swing.*;
 import java.lang.reflect.Field;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
@@ -163,27 +161,57 @@ class ViewTelaJogoTest {
         verify(mockListener).confirmouErro();
     }
 
-    @Test
-    @DisplayName("subscribe/unsubscribe: Deve adicionar e remover listeners corretamente")
-    void testSubscribeUnsubscribe() throws Exception {
-        // Usa reflection para acessar a lista privada de listeners
-        Field listenersField = ViewTelaJogo.class.getDeclaredField("listeners");
-        listenersField.setAccessible(true);
-        java.util.List<NavegadorTelaJogoListener> listeners = (java.util.List<NavegadorTelaJogoListener>) listenersField.get(view);
+    @Nested
+    @DisplayName("Testes para subscribe() e unsubscribe()")
+    class SubscribeUnsubscribeTests {
 
-        // O listener mock já foi adicionado no @BeforeEach
-        assertEquals(1, listeners.size());
+        // O @BeforeEach da classe principal já cria a 'view' e o 'mockListener'
 
-        // Tentar adicionar de novo não deve fazer nada
-        view.subscribe(mockListener);
-        assertEquals(1, listeners.size());
+        @SuppressWarnings("unchecked")
+        private List<NavegadorTelaJogoListener> getListenersInternos() throws Exception {
+            Field listenersField = ViewTelaJogo.class.getDeclaredField("listeners");
+            listenersField.setAccessible(true);
+            return (List<NavegadorTelaJogoListener>) listenersField.get(view);
+        }
 
-        // Remove o listener
-        view.unsubscribe(mockListener);
-        assertEquals(0, listeners.size());
+        @Test
+        @DisplayName("subscribe: Não deve adicionar um listener que já está na lista")
+        void subscribe_naoDeveAdicionarListenerSeJaExistir() throws Exception {
+            // Arrange: o @BeforeEach principal já adiciona o listener uma vez.
+            assertEquals(1, getListenersInternos().size(), "Pré-condição: a lista já deve conter o listener.");
 
-        // Tentar remover de novo não deve fazer nada
-        view.unsubscribe(mockListener);
-        assertEquals(0, listeners.size());
+            // Act
+            GuiActionRunner.execute(() -> view.subscribe(mockListener));
+
+            // Assert
+            assertEquals(1, getListenersInternos().size(), "O tamanho da lista não deveria mudar.");
+        }
+
+        @Test
+        @DisplayName("unsubscribe: Deve remover um listener que está na lista")
+        void unsubscribe_deveRemoverListenerSeExistir() throws Exception {
+            // Arrange
+            assertEquals(1, getListenersInternos().size(), "Pré-condição: a lista deve conter um listener.");
+
+            // Act
+            GuiActionRunner.execute(() -> view.unsubscribe(mockListener));
+
+            // Assert
+            assertTrue(getListenersInternos().isEmpty(), "A lista deveria ficar vazia.");
+        }
+
+        @Test
+        @DisplayName("unsubscribe: Não deve fazer nada se o listener não estiver na lista")
+        void unsubscribe_naoDeveFazerNadaSeListenerNaoExistir() throws Exception {
+            // Arrange: primeiro, removemos o listener existente
+            GuiActionRunner.execute(() -> view.unsubscribe(mockListener));
+            assertTrue(getListenersInternos().isEmpty(), "Pré-condição: a lista deve estar vazia.");
+
+            // Act & Assert
+            assertDoesNotThrow(() -> {
+                GuiActionRunner.execute(() -> view.unsubscribe(mockListener));
+                assertTrue(getListenersInternos().isEmpty(), "A lista deve permanecer vazia.");
+            });
+        }
     }
 }
