@@ -278,6 +278,25 @@ class TabuleiroTest {
                 }
             }
         }
+
+        @Test
+        @DisplayName("Garante que os contadores de bombas e quadrados abertos são inicializados com 0")
+        void testInicializaTabuleiroVazio_InicializaContadores() throws Exception {
+            // Act
+            tabuleiro.inicializaTabuleiroVazio(10, 10);
+
+            // Assert: Usa reflexão para acessar os campos privados
+            Field quadradosAbertosField = Tabuleiro.class.getDeclaredField("quadradosAbertos");
+            quadradosAbertosField.setAccessible(true);
+            int quadradosAbertos = (int) quadradosAbertosField.get(tabuleiro);
+            assertEquals(0, quadradosAbertos, "quadradosAbertos deve ser inicializado com 0.");
+
+            Field bombasField = Tabuleiro.class.getDeclaredField("bombas");
+            bombasField.setAccessible(true);
+            int bombas = (int) bombasField.get(tabuleiro);
+            assertEquals(0, bombas, "bombas deve ser inicializado com 0.");
+        }
+
     }
 
     @Nested
@@ -364,11 +383,26 @@ class TabuleiroTest {
         }
 
         @Test
-        @DisplayName("setAberto deve abrir um quadrado fechado")
-        void testSetAberto() throws ForaDoTabuleiroException {
+        @DisplayName("setAberto deve abrir um quadrado e incrementar o contador de quadrados abertos")
+        void testSetAberto_AbreQuadradoEIncrementaContador() throws Exception {
+            // Arrange
             assertFalse(tabuleiro.isAberto(locValida), "Pré-condição: quadrado deve estar fechado.");
+
+            // Pega o valor inicial do contador via reflexão
+            Field contadorField = Tabuleiro.class.getDeclaredField("quadradosAbertos");
+            contadorField.setAccessible(true);
+            int valorInicial = (int) contadorField.get(tabuleiro);
+
+            // Act
             tabuleiro.setAberto(locValida);
+
+            // Assert
+            // 1. Verifica se o quadrado está aberto
             assertTrue(tabuleiro.isAberto(locValida), "O quadrado deveria ter sido aberto.");
+
+            // 2. Verifica se o contador foi incrementado
+            int valorFinal = (int) contadorField.get(tabuleiro);
+            assertEquals(valorInicial + 1, valorFinal, "O contador de quadradosAbertos deveria ter sido incrementado em 1.");
         }
 
         @Test
@@ -429,4 +463,62 @@ class TabuleiroTest {
             assertDoesNotThrow(() -> tabuleiro.setDesmarcado(locValida), "Não deveria lançar exceção para setDesmarcado em coordenada válida de fronteira.");
         }
     }
+
+    @Nested
+    @DisplayName("Testes para ganhou()")
+    class TestesParaGanhou {
+
+        // Método auxiliar para definir o estado do jogo via reflexão
+        private void setEstadoDoJogo(int linhas, int colunas, int bombas, int abertos) throws Exception {
+            Field linhaSizeField = Tabuleiro.class.getDeclaredField("linha_size");
+            linhaSizeField.setAccessible(true);
+            linhaSizeField.set(tabuleiro, linhas);
+
+            Field colunaSizeField = Tabuleiro.class.getDeclaredField("coluna_size");
+            colunaSizeField.setAccessible(true);
+            colunaSizeField.set(tabuleiro, colunas);
+
+            Field bombasField = Tabuleiro.class.getDeclaredField("bombas");
+            bombasField.setAccessible(true);
+            bombasField.set(tabuleiro, bombas);
+
+            Field quadradosAbertosField = Tabuleiro.class.getDeclaredField("quadradosAbertos");
+            quadradosAbertosField.setAccessible(true);
+            quadradosAbertosField.set(tabuleiro, abertos);
+        }
+
+        @Test
+        @DisplayName("Retorna true quando todos os quadrados seguros foram abertos")
+        void ganhou_RetornaTrue_QuandoJogoEstaGanho() throws Exception {
+            // Arrange: (10*10) - 15 bombas = 85 quadrados seguros.
+            // Se 85 quadrados foram abertos, o jogo está ganho.
+            setEstadoDoJogo(10, 10, 15, 85);
+
+            // Act & Assert
+            assertTrue(tabuleiro.ganhou(), "O método ganhou() deveria retornar true.");
+        }
+
+        @Test
+        @DisplayName("Retorna false quando ainda faltam quadrados seguros para abrir")
+        void ganhou_RetornaFalse_QuandoJogoNaoEstaGanho() throws Exception {
+            // Arrange: (10*10) - 15 bombas = 85 quadrados seguros.
+            // Se apenas 84 foram abertos, o jogo não está ganho.
+            setEstadoDoJogo(10, 10, 15, 84);
+
+            // Act & Assert
+            assertFalse(tabuleiro.ganhou(), "O método ganhou() deveria retornar false.");
+        }
+
+        @Test
+        @DisplayName("Retorna false quando o número de quadrados abertos é maior que o necessário (caso de segurança)")
+        void ganhou_RetornaFalse_QuandoAbertosMaiorQueNecessario() throws Exception {
+            // Arrange: (10*10) - 15 bombas = 85 quadrados seguros.
+            // Se 86 foram abertos (cenário hipotético de um bug), não é uma condição de vitória.
+            setEstadoDoJogo(10, 10, 15, 86);
+
+            // Act & Assert
+            assertFalse(tabuleiro.ganhou(), "O método ganhou() deveria retornar false se o contador estiver incorreto.");
+        }
+    }
+
 }
