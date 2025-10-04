@@ -1,8 +1,8 @@
 package org.minesweeper.coordinator;
 
 public interface CoordenadorListener {
-    public abstract void fimJogo(boolean ganhou);
-    public abstract void reiniciaJogo();
-    public abstract void encerraAplicacao();
-    public abstract void encerraAplicacaoErroNaoCriouJogo();
+    void fimJogo(boolean ganhou);
+    void reiniciaJogo();
+    void encerraAplicacao();
+    void encerraAplicacaoErroNaoCriouJogo();
 }
