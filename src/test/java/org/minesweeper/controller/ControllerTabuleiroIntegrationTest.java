@@ -182,4 +182,67 @@ class ControllerTabuleiroIntegrationTest {
             assertFalse(tabuleiro.isAberto(locSegura), "O quadrado não deveria ter sido aberto.");
         }
     }
+
+    @Nested
+    @DisplayName("Testes de Integração para ganhou()")
+    class TestesDeIntegracaoParaGanhou {
+
+        // O @BeforeEach da classe principal já garante que os singletons são resetados.
+
+        /**
+         * Método auxiliar para definir o estado interno do Tabuleiro real usando Reflexão.
+         * Isso nos permite simular um estado de jogo específico.
+         */
+        private void setEstadoDoJogo(int linhas, int colunas, int bombas, int abertos) throws Exception {
+            // Obtém a instância real do Tabuleiro
+            Tabuleiro tabuleiroReal = Tabuleiro.getInstance();
+
+            // Usa reflexão para acessar e modificar os campos privados
+            Field linhaSizeField = Tabuleiro.class.getDeclaredField("linha_size");
+            linhaSizeField.setAccessible(true);
+            linhaSizeField.set(tabuleiroReal, linhas);
+
+            Field colunaSizeField = Tabuleiro.class.getDeclaredField("coluna_size");
+            colunaSizeField.setAccessible(true);
+            colunaSizeField.set(tabuleiroReal, colunas);
+
+            Field bombasField = Tabuleiro.class.getDeclaredField("bombas");
+            bombasField.setAccessible(true);
+            bombasField.set(tabuleiroReal, bombas);
+
+            Field quadradosAbertosField = Tabuleiro.class.getDeclaredField("quadradosAbertos");
+            quadradosAbertosField.setAccessible(true);
+            quadradosAbertosField.set(tabuleiroReal, abertos);
+        }
+
+        @Test
+        @DisplayName("É retornado true quando o usuário ganhou o jogo")
+        void ganhou_RetornaTrue_QuandoCondicaoDeVitoriaEhAtingida() throws Exception {
+            // Arrange: Simulamos um estado de vitória.
+            // Tabuleiro 10x10 com 15 bombas. Total de quadrados seguros = 100 - 15 = 85.
+            // Se 85 quadrados estão abertos, o jogo está ganho.
+            setEstadoDoJogo(10, 10, 15, 85);
+
+            // Act: Chamamos o método no controller, que por sua vez chamará o do tabuleiro real.
+            boolean resultado = controller.ganhou();
+
+            // Assert: O resultado repassado pelo controller deve ser true.
+            assertTrue(resultado, "O controller deveria retornar true quando a condição de vitória no tabuleiro é atingida.");
+        }
+
+        @Test
+        @DisplayName("É retornado false quando o usuário ainda não ganhou o jogo")
+        void ganhou_RetornaFalse_QuandoAindaFaltamQuadradosParaAbrir() throws Exception {
+            // Arrange: Simulamos um estado de jogo em andamento.
+            // Tabuleiro 10x10 com 15 bombas. Total de quadrados seguros = 85.
+            // Se apenas 84 quadrados estão abertos, o jogo não está ganho.
+            setEstadoDoJogo(10, 10, 15, 84);
+
+            // Act
+            boolean resultado = controller.ganhou();
+
+            // Assert
+            assertFalse(resultado, "O controller deveria retornar false quando a condição de vitória não foi atingida.");
+        }
+    }
 }
