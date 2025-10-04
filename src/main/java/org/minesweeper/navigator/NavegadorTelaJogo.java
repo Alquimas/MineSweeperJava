@@ -6,6 +6,7 @@ import org.minesweeper.model.Localizacao;
 import org.minesweeper.model.TabuleiroFront;
 import org.minesweeper.view.ViewTelaJogo;
 
+import javax.swing.*;
 import java.util.ArrayList;
 
 public class NavegadorTelaJogo implements NavegadorTelaJogoListener{
@@ -13,6 +14,7 @@ public class NavegadorTelaJogo implements NavegadorTelaJogoListener{
     private ControllerTabuleiro controller;
     private TabuleiroFront tabuleiro;
     private ArrayList<CoordenadorListener> listeners;
+    private JFrame tela;
 
     @Override
     public void confirmouErro() {}
