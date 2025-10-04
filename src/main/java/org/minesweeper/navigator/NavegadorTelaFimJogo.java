@@ -11,6 +11,11 @@ public class NavegadorTelaFimJogo implements NavegadorTelaFimJogoListener {
     private ArrayList<CoordenadorListener> listeners;
     private JFrame tela;
 
+    public NavegadorTelaFimJogo() {
+        listeners = new ArrayList<>();
+        view = new ViewTelaFimJogo();
+    }
+
     @Override
     public void finalizarJogo() {}
 

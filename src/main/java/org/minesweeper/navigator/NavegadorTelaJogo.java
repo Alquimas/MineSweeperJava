@@ -16,6 +16,12 @@ public class NavegadorTelaJogo implements NavegadorTelaJogoListener{
     private ArrayList<CoordenadorListener> listeners;
     private JFrame tela;
 
+    public NavegadorTelaJogo(){
+        listeners = new ArrayList<>();
+        view = new ViewTelaJogo();
+        controller = ControllerTabuleiro.getInstance();
+    }
+
     @Override
     public void confirmouErro() {}
 
