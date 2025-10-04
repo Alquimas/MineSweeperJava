@@ -25,4 +25,10 @@ public class NavegadorTelaJogo implements NavegadorTelaJogoListener{
     @Override
     public void onBotaoEsquerdo(Localizacao localizacao) {}
 
+    public void iniciar(JFrame tela){}
+    private void destruir(){}
+    private void criaJogo(){}
+    public void subscribe(CoordenadorListener coordenadorListener){}
+    public void unsubscribe(CoordenadorListener coordenadorListener){}
+
 }
