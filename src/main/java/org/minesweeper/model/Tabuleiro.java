@@ -10,6 +10,8 @@ public class Tabuleiro implements TabuleiroInterface {
     private ArrayList<ArrayList<Quadrado>> tabuleiro;
     private int linha_size;
     private int coluna_size;
+    private int bombas;
+    private int quadradosAbertos;
     private static Tabuleiro instance;
 
     private Tabuleiro(){
@@ -22,9 +24,15 @@ public class Tabuleiro implements TabuleiroInterface {
         return acaoTabuleiro.visitTabuleiro(this);
     }
 
+    public boolean ganhou(){
+        return linha_size * coluna_size - bombas == quadradosAbertos;
+    }
+
     public void inicializaTabuleiroVazio(int linha, int coluna){
         this.linha_size = linha;
         this.coluna_size = coluna;
+        this.quadradosAbertos = 0;
+        this.bombas = 0;
 
         this.tabuleiro = new ArrayList<>();
 
@@ -39,9 +47,11 @@ public class Tabuleiro implements TabuleiroInterface {
         int linha = quadrado.getLocalizacao().getLinha();
         int coluna = quadrado.getLocalizacao().getColuna();
 
-        if (quadradoExiste(linha, coluna))
+        if (quadradoExiste(linha, coluna)) {
             tabuleiro.get(linha).set(coluna, quadrado);
-        else
+            if (quadrado.isBomba())
+                ++bombas;
+        } else
             throw new ForaDoTabuleiroException();
     }
 
@@ -91,6 +101,7 @@ public class Tabuleiro implements TabuleiroInterface {
         if (!quadradoExiste(linha, coluna)) throw new ForaDoTabuleiroException();
 
         tabuleiro.get(linha).get(coluna).setAberto(true);
+        ++quadradosAbertos;
     }
 
     public boolean isAberto(Localizacao localizacao) throws ForaDoTabuleiroException{

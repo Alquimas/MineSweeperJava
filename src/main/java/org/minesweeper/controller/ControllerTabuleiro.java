@@ -31,6 +31,10 @@ public class ControllerTabuleiro {
         return tabuleiro.accept(acao);
     }
 
+    public boolean ganhou(){
+        return tabuleiro.ganhou();
+    }
+
     public static ControllerTabuleiro getInstance() {
         if (instance == null)
             instance = new ControllerTabuleiro();
