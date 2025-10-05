@@ -72,13 +72,13 @@ public class ViewTelaJogo extends JPanel {
     }
 
     public void notificaBotaoDireito(Localizacao localizacao){
-        for (NavegadorTelaJogoListener l : listeners) {
+        for (NavegadorTelaJogoListener l : new ArrayList<>(listeners)) {
             l.onBotaoDireito(localizacao);
         }
     }
     
     public void notificaBotaoEsquerdo(Localizacao localizacao){
-        for (NavegadorTelaJogoListener l : listeners) {
+        for (NavegadorTelaJogoListener l : new ArrayList<>(listeners)) {
             l.onBotaoEsquerdo(localizacao);
         }
     }
@@ -144,7 +144,7 @@ public class ViewTelaJogo extends JPanel {
     }
 
     public void notificaOkErroCriacaoJogo(){
-        for (NavegadorTelaJogoListener l : listeners) {
+        for (NavegadorTelaJogoListener l : new ArrayList<>(listeners)) {
             l.confirmouErro();
         }
     }

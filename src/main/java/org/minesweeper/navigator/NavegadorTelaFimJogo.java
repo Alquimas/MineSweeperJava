@@ -19,7 +19,7 @@ public class NavegadorTelaFimJogo implements NavegadorTelaFimJogoListener {
     @Override
     public void finalizarJogo() {
         destruir();
-        for (CoordenadorListener listener : listeners) {
+        for (CoordenadorListener listener : new ArrayList<>(listeners)) {
             listener.encerraAplicacao();
         }
     }
@@ -27,7 +27,7 @@ public class NavegadorTelaFimJogo implements NavegadorTelaFimJogoListener {
     @Override
     public void reiniciarJogo() {
         destruir();
-        for (CoordenadorListener listener : listeners) {
+        for (CoordenadorListener listener : new ArrayList<>(listeners)) {
             listener.reiniciaJogo();
         }
     }
