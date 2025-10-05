@@ -73,14 +73,14 @@ public class ViewTelaFimJogo extends JPanel {
 
     public void notificaReiniciarJogo(){
         limparRecursos();
-        for (NavegadorTelaFimJogoListener listener : listeners) {
+        for (NavegadorTelaFimJogoListener listener : new ArrayList<>(listeners)) {
             listener.reiniciarJogo();
         }
     }
 
     public void notificaFinalizarJogo(){
         limparRecursos();
-        for (NavegadorTelaFimJogoListener listener : listeners) {
+        for (NavegadorTelaFimJogoListener listener : new ArrayList<>(listeners)) {
             listener.finalizarJogo();
         }
     }

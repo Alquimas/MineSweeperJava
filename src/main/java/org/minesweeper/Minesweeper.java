@@ -1,11 +1,11 @@
 package org.minesweeper;
 
+import org.minesweeper.coordinator.Coordenador;
+
 public class Minesweeper {
     public static void main(String[] args) {
-        System.out.println("Oi.");
+        Coordenador coordenador = new Coordenador();
+        coordenador.IniciaJogo();
     }
 
-    public int addWithOne(int a, int b) {
-        return a + b + 1;
-    }
 }

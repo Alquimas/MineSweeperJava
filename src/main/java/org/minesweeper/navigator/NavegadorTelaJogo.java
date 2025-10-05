@@ -27,7 +27,7 @@ public class NavegadorTelaJogo implements NavegadorTelaJogoListener{
     @Override
     public void confirmouErro() {
         destruir();
-        for (CoordenadorListener l : listeners) {
+        for (CoordenadorListener l : new ArrayList<>(listeners)) {
             l.encerraAplicacaoErroNaoCriouJogo();
         }
     }
@@ -58,7 +58,7 @@ public class NavegadorTelaJogo implements NavegadorTelaJogoListener{
         if (resultado.get(0).isBomba()) {
             view.mostraQuadradoBomba(localizacao);
             destruir();
-            for (CoordenadorListener l : listeners) {
+            for (CoordenadorListener l : new ArrayList<>(listeners)) {
                 l.fimJogo(false); // derrota
             }
         } else {
@@ -67,7 +67,7 @@ public class NavegadorTelaJogo implements NavegadorTelaJogoListener{
             }
             if(controller.ganhou()) {
                 destruir();
-                for (CoordenadorListener l : listeners) {
+                for (CoordenadorListener l : new ArrayList<>(listeners)) {
                     l.fimJogo(true);
                 }
             }
@@ -112,6 +112,7 @@ public class NavegadorTelaJogo implements NavegadorTelaJogoListener{
             listeners.add(coordenadorListener);
         }
     }
+
     public void unsubscribe(CoordenadorListener coordenadorListener){
         listeners.remove(coordenadorListener);
     }

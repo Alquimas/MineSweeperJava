@@ -17,7 +17,7 @@ public class Coordenador implements CoordenadorListener {
         navegadorTelaJogo = new NavegadorTelaJogo();
         navegadorTelaFimJogo = new NavegadorTelaFimJogo();
         frame = new JFrame("Minesweeper");
-        frame.setSize(400, 300);
+        frame.setSize(1000, 1000);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
         frame.setLocationRelativeTo(null);
@@ -29,6 +29,12 @@ public class Coordenador implements CoordenadorListener {
     public void fimJogo(boolean ganhou) {
         navegadorTelaJogo.unsubscribe(this);
         navegadorTelaFimJogo.subscribe(this);
+        frame = new JFrame("Minesweeper");
+        frame.setSize(1000, 1000);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setResizable(false);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
         navegadorTelaFimJogo.iniciar(frame, ganhou);
     }
 
