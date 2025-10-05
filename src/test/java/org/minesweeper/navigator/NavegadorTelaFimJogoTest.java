@@ -90,7 +90,7 @@ class NavegadorTelaFimJogoTest {
             navegador = new NavegadorTelaFimJogo();
             // Injeta os mocks via reflexão, pois não temos construtor para isso
             setField(navegador, "view", mockView);
-            setField(navegador, "frame", mockFrame);
+            setField(navegador, "tela", mockFrame);
         }
 
         @Test
