@@ -1,5 +1,6 @@
 package org.minesweeper.view;
 
+import org.minesweeper.model.Icons;
 import org.minesweeper.model.Localizacao;
 import org.minesweeper.navigator.NavegadorTelaJogoListener;
 
@@ -29,6 +30,9 @@ public class ViewTelaJogo extends JPanel {
             ArrayList<JButton> linha = new ArrayList<>();
             for (int j = 0; j < coluna_size; j++) {
                 JButton botao = getJButton(i, j);
+                botao.setFont(new Font("Arial", Font.BOLD, 20));
+                botao.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+                botao.setBackground(new Color(190, 190, 190));
 
                 linha.add(botao);
                 painelGrid.add(botao);
@@ -91,9 +95,17 @@ public class ViewTelaJogo extends JPanel {
         if (coluna < 0 || coluna >= tabuleiro.get(linha).size()) return;
 
         JButton botao = tabuleiro.get(linha).get(coluna);
-        botao.setEnabled(false);
+        botao.setBackground(new Color(255, 255, 255));
 
         if (numBombasVizinhos > 0) {
+            switch (numBombasVizinhos) {
+                case 1 -> botao.setForeground(Color.BLUE);
+                case 2 -> botao.setForeground(new Color(0, 128, 0)); // green
+                case 3 -> botao.setForeground(Color.RED);
+                case 4 -> botao.setForeground(new Color(0, 0, 128)); // dark blue
+                case 5 -> botao.setForeground(new Color(128, 0, 0)); // dark red
+                default -> botao.setForeground(Color.BLACK);
+            }
             botao.setText(String.valueOf(numBombasVizinhos));
         } else {
             botao.setText("");
@@ -118,7 +130,10 @@ public class ViewTelaJogo extends JPanel {
         int coluna = localizacao.getColuna();
 
         JButton botao = tabuleiro.get(linha).get(coluna);
-        botao.setText("🚩");
+        botao.setText("");
+        botao.setIcon(Icons.FLAG_ICON);
+        botao.setHorizontalTextPosition(SwingConstants.CENTER);
+        botao.setVerticalTextPosition(SwingConstants.CENTER);
         botao.setEnabled(true);
     }
 
@@ -128,6 +143,7 @@ public class ViewTelaJogo extends JPanel {
 
         JButton botao = tabuleiro.get(linha).get(coluna);
         botao.setText("");
+        botao.setIcon(null);
         botao.setEnabled(true);
     }
 
