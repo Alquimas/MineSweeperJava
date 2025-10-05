@@ -30,7 +30,7 @@ public class Coordenador implements CoordenadorListener {
         navegadorTelaJogo.unsubscribe(this);
         navegadorTelaFimJogo.subscribe(this);
         frame = new JFrame("Minesweeper");
-        frame.setSize(1000, 1000);
+        frame.setSize(1000, 200);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
         frame.setLocationRelativeTo(null);
