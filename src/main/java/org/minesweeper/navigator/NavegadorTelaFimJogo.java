@@ -17,15 +17,51 @@ public class NavegadorTelaFimJogo implements NavegadorTelaFimJogoListener {
     }
 
     @Override
-    public void finalizarJogo() {}
+    public void finalizarJogo() {
+        destruir();
+        for (CoordenadorListener listener : listeners) {
+            listener.encerraAplicacao();
+        }
+    }
 
     @Override
-    public void reiniciarJogo() {}
+    public void reiniciarJogo() {
+        destruir();
+        for (CoordenadorListener listener : listeners) {
+            listener.reiniciaJogo();
+        }
+    }
 
-    public void iniciar(JFrame tela, boolean ganhou){}
-    private void destruir(){}
-    private void ganhouJogo(){}
-    private void perdeuJogo(){}
-    public void subscribe(CoordenadorListener coordenadorListener){}
-    public void unsubscribe(CoordenadorListener coordenadorListener){}
+    public void iniciar(JFrame tela, boolean ganhou){
+        this.tela = tela;
+        this.view = new ViewTelaFimJogo();
+        this.view.subscribe(this);
+        tela.add(view);
+
+        if (ganhou) {
+            view.mostraTelaGanhouJogo();
+        } else {
+            view.mostraTelaPerdeuJogo();
+        }
+    }
+
+    private void destruir(){
+        if (view != null) {
+            view.unsubscribe(this);
+            view.limparRecursos();
+            if (tela != null) {
+                tela.remove(view);
+            }
+            view = null;
+        }
+    }
+
+    public void subscribe(CoordenadorListener coordenadorListener){
+        if (!listeners.contains(coordenadorListener)) {
+            listeners.add(coordenadorListener);
+        }
+    }
+    public void unsubscribe(CoordenadorListener coordenadorListener){
+        listeners.remove(coordenadorListener);
+    }
 }
