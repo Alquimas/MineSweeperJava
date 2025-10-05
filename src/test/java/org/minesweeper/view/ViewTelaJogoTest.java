@@ -7,6 +7,7 @@ import org.assertj.swing.fixture.JButtonFixture;
 import org.assertj.swing.fixture.JOptionPaneFixture;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.minesweeper.model.Icons;
 import org.minesweeper.navigator.NavegadorTelaJogoListener;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -14,11 +15,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.minesweeper.model.Localizacao;
 
 import javax.swing.*;
+import java.awt.*;
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 class ViewTelaJogoTest {
@@ -100,7 +104,7 @@ class ViewTelaJogoTest {
     }
 
     @Test
-    @DisplayName("mostraQuadradoAberto: Deve desabilitar o botão e mostrar o número")
+    @DisplayName("mostraQuadradoAberto: Deve mudar a cor do botão e mostrar o número")
     void testMostraQuadradoAberto() {
         GuiActionRunner.execute(() -> view.mostraJogo(5, 5));
         Localizacao loc = new Localizacao(2, 3);
@@ -108,7 +112,8 @@ class ViewTelaJogoTest {
         GuiActionRunner.execute(() -> view.mostraQuadradoAberto(loc, 3));
 
         JButtonFixture botao = window.button("btn-2-3");
-        botao.requireDisabled();
+        botao.requireEnabled();
+        botao.background().requireEqualTo(new Color(255, 255, 255));
         botao.requireText("3");
     }
 
@@ -135,12 +140,14 @@ class ViewTelaJogoTest {
         // Marca
         GuiActionRunner.execute(() -> view.mostraQuadradoMarcado(loc));
         botao.requireEnabled();
-        botao.requireText("🚩");
+        botao.requireText("");
+        assertThat(botao.target().getIcon()).isSameAs(Icons.FLAG_ICON);
 
         // Desmarca
         GuiActionRunner.execute(() -> view.mostraQuadradoDesmarcado(loc));
         botao.requireEnabled();
         botao.requireText("");
+        assertThat(botao.target().getIcon()).isNull();
     }
 
     @Test
