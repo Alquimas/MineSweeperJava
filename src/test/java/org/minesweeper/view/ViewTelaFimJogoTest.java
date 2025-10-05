@@ -2,7 +2,6 @@ package org.minesweeper.view;
 
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.fixture.FrameFixture;
-import org.assertj.swing.fixture.JButtonFixture;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.minesweeper.navigator.NavegadorTelaFimJogoListener;
@@ -14,7 +13,6 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -63,13 +61,19 @@ class ViewTelaFimJogoTest {
         }
 
         @Test
-        @DisplayName("Garante que os botões notificam os listeners corretamente")
-        void testMostraTelaPerdeuJogo_AcoesDosBotoes() {
+        @DisplayName("Garante que o botão novo jogo notifica os listeners corretamente")
+        void testMostraTelaPerdeuJogo_AcaoBotaoNovoJogo() {
             GuiActionRunner.execute(() -> view.mostraTelaPerdeuJogo());
 
             // Simula clique no botão "Novo Jogo"
             window.button("btnNovoJogo").click();
             verify(mockListener).reiniciarJogo(); // Verifica se o listener foi notificado
+        }
+
+        @Test
+        @DisplayName("Garante que os botão finalizar jogo notifica os listeners corretamente")
+        void testMostraTelaPerdeuJogo_AcaoBotaoFinalizarJogo() {
+            GuiActionRunner.execute(() -> view.mostraTelaPerdeuJogo());
 
             // Simula clique no botão "Finalizar Jogo"
             window.button("btnFinalizarJogo").click();
@@ -91,12 +95,18 @@ class ViewTelaFimJogoTest {
         }
 
         @Test
-        @DisplayName("Garante que os botões notificam os listeners corretamente")
-        void testMostraTelaGanhouJogo_AcoesDosBotoes() {
+        @DisplayName("Garante que o botão novo jogo notifica os listeners corretamente")
+        void testMostraTelaGanhouJogo_AcaoBotaoNovoJogo() {
             GuiActionRunner.execute(() -> view.mostraTelaGanhouJogo());
 
             window.button("btnNovoJogo").click();
             verify(mockListener).reiniciarJogo();
+        }
+
+        @Test
+        @DisplayName("Garante que os botão finalizar jogo notifica os listeners corretamente")
+        void testMostraTelaGanhouJogo_AcaoFinalizarJogo() {
+            GuiActionRunner.execute(() -> view.mostraTelaGanhouJogo());
 
             window.button("btnFinalizarJogo").click();
             verify(mockListener).finalizarJogo();
