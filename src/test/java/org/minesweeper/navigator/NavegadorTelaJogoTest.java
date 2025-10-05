@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.minesweeper.coordinator.CoordenadorListener;
-import org.minesweeper.navigator.NavegadorTelaJogo;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.minesweeper.controller.ControllerTabuleiro;
@@ -119,6 +118,9 @@ class NavegadorTelaJogoTest {
         @Test
         @DisplayName("Garante que os recursos da view são limpos e os listeners são notificados")
         void confirmouErro_chamaDestruirENotificaListeners() {
+            // Start
+            navegador.iniciar(mockFrame);
+
             // Arrange
             navegador.subscribe(mockCoordenadorListener);
 

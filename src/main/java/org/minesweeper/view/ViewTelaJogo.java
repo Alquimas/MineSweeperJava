@@ -130,6 +130,7 @@ public class ViewTelaJogo extends JPanel {
         botao.setText("");
         botao.setEnabled(true);
     }
+
     public void mostraErroCriacaoJogo(){
         SwingUtilities.invokeLater(() -> {
             JOptionPane.showMessageDialog(
@@ -138,14 +139,15 @@ public class ViewTelaJogo extends JPanel {
                     "Erro",
                     JOptionPane.ERROR_MESSAGE
             );
-
-            // Notify listeners after user clicks OK
-            for (NavegadorTelaJogoListener l : listeners) {
-                l.confirmouErro();
-            }
+            notificaOkErroCriacaoJogo();
         });
     }
-    public void notificaOkErroCriacaoJogo(){}
+
+    public void notificaOkErroCriacaoJogo(){
+        for (NavegadorTelaJogoListener l : listeners) {
+            l.confirmouErro();
+        }
+    }
     public void subscribe(NavegadorTelaJogoListener navegadorTelaJogoListener){
         if (!listeners.contains(navegadorTelaJogoListener)) {
             listeners.add(navegadorTelaJogoListener);
