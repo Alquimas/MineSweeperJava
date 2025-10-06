@@ -12,14 +12,13 @@
     <name>MineSweeper</name>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source> <!-- Java version -->
+        <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.jupiter.version>5.11.0</junit.jupiter.version>
     </properties>
 
     <dependencies>
-        <!-- JUnit 5 -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -42,18 +41,12 @@
 
     <build>
         <plugins>
-            <!-- Compiler -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
-                <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
-                </configuration>
             </plugin>
 
-            <!-- JAR plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -67,7 +60,6 @@
                 </configuration>
             </plugin>
 
-            <!-- Surefire for JUnit 5 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -78,4 +70,99 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>jpackage-windows</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.github.wiverson</groupId>
+                        <artifactId>jtoolprovider-plugin</artifactId>
+                        <version>1.0.12</version>
+                        <executions>
+                            <execution>
+                                <id>jpackage-windows</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>java-tool</goal>
+                                </goals>
+                                <configuration>
+                                    <toolName>jpackage</toolName>
+                                    <args>
+                                        <arg>--name</arg>
+                                        <arg>${project.name}</arg>
+                                        <arg>--input</arg>
+                                        <arg>${project.build.directory}</arg>
+                                        <arg>--main-jar</arg>
+                                        <arg>${project.build.finalName}.jar</arg>
+                                        <arg>--main-class</arg>
+                                        <arg>org.minesweeper.Minesweeper</arg>
+                                        <arg>--dest</arg>
+                                        <arg>${project.build.directory}/dist</arg>
+                                        <arg>--type</arg>
+                                        <arg>exe</arg>
+                                        <arg>--win-shortcut</arg>
+                                        <arg>--win-menu</arg>
+                                    </args>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>jpackage-linux</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.github.wiverson</groupId>
+                        <artifactId>jtoolprovider-plugin</artifactId>
+                        <version>1.0.12</version>
+                        <executions>
+                            <execution>
+                                <id>jpackage-linux</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>java-tool</goal>
+                                </goals>
+                                <configuration>
+                                    <toolName>jpackage</toolName>
+                                    <args>
+                                        <arg>--name</arg>
+                                        <arg>${project.name}</arg>
+                                        <arg>--input</arg>
+                                        <arg>${project.build.directory}</arg>
+                                        <arg>--main-jar</arg>
+                                        <arg>${project.build.finalName}.jar</arg>
+                                        <arg>--main-class</arg>
+                                        <arg>org.minesweeper.Minesweeper</arg>
+                                        <arg>--dest</arg>
+                                        <arg>${project.build.directory}/dist</arg>
+                                        <arg>--type</arg>
+                                        <arg>deb</arg>
+                                        <arg>--linux-shortcut</arg>
+                                        <arg>--linux-menu-group</arg>
+                                        <arg>Games</arg>
+                                    </args>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
