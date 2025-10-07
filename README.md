@@ -6,8 +6,9 @@ Essa é a primeira versão de uma implementação do clássico jogo Minesweeper 
 
 Temos binários pré-compilados na página de [releases](https://github.com/Alquimas/MineSweeperJava/releases/tag/v1.0.0). Cada um deles pode ser instalado da seguinte forma:
 
-- A versão `.deb` foi testada no sistema `Debian 12`. Ela pode ser instalada com `sudo dpkg -i ./minesweeper_1-0-0_amd64.deb`.
+- A versão `debian.deb` foi testada no sistema `Debian 12`. Ela pode ser instalada com `sudo dpkg -i ./minesweeper_1-0-0_amd64_debian.deb`.
 - A versão `.exe` foi testada no sistema `Windows 11`. Ela pode ser instalada através do instalador que vai ser exibido ao executar o binário.
+- A versão `ubuntu.deb` foi testada no sistema `Ubuntu 24`. Ela pode ser instalada com `sudo dpkg -i ./minesweeper_1-0-0_amd64_debian.deb`.
 
 ### Como jogar
 
